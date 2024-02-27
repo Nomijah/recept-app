@@ -1,4 +1,4 @@
-import { Ingredient } from "./helperTypes";
+import { Ingredient, MainCategories } from "./helperTypes";
 
 export type Recipe = {
   id: string;
@@ -8,7 +8,8 @@ export type Recipe = {
   portionsUnit: string;
   ingredients: Ingredient[];
   instructions: string[];
-  categories: string[];
+  mainCategory: MainCategories;
+  subCaregory: string;
   tags: string[];
   imageUrl: string;
   userId: string;
