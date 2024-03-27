@@ -1,6 +1,6 @@
 "use client";
 import React from "react";
-import { useForm } from "@mantine/form";
+import { isNotEmpty, useForm } from "@mantine/form";
 import {
   Autocomplete,
   Box,
@@ -14,15 +14,22 @@ import {
   NumberInput,
   Select,
   TagsInput,
+  Text,
   TextInput,
   Textarea,
   Title,
 } from "@mantine/core";
-import { unitsList, Unit, mainCategoriesList, MainCategories } from "@/app/Schemas/helperTypes";
+
 import { DragDropContext, Droppable, Draggable } from "@hello-pangea/dnd";
 import { LuGripVertical } from "react-icons/lu";
 import { FaTrashAlt } from "react-icons/fa";
-import { recipeFormValues } from "@/app/Schemas/formValues";
+import { recipeFormValues } from "@/types/formTypes/formValues";
+import { Unit, unitsList } from "@/types/helperTypes/unit";
+import {
+  MainCategories,
+  mainCategoriesList,
+} from "@/types/helperTypes/mainCategories";
+import { convertFormValues } from "@/helperFunctions/convertFormValues";
 
 const RecipeForm = () => {
   function isUnit(value: any): value is Unit {
@@ -39,7 +46,8 @@ const RecipeForm = () => {
       mainCategory: null,
       subCategory: "",
       tags: [],
-      imageUrl: "",
+      image: null,
+      caption: "",
       public: false,
     },
 
@@ -50,7 +58,7 @@ const RecipeForm = () => {
         value.length < 100
           ? null
           : "Beskrivningen får innehålla max 100 tecken",
-      ingredients: {
+      ingredients: isNotEmpty("Minst en ingrediens måste läggas till") && {
         name: (value) => (value.length > 0 ? null : "Fyll i en ingrediens"),
         quantity: (value: number | null) =>
           value !== null ? null : "Skriv ett antal",
@@ -59,9 +67,13 @@ const RecipeForm = () => {
             ? null
             : "Välj en enhet från listan",
       },
-      mainCategory: (value: MainCategories | null) => value !== null && mainCategoriesList.toString().includes(value)
-      ? null
-      : "Välj en kategori från listan",
+      instructions: isNotEmpty(
+        "Minst ett stycke instruktioner måste fyllas i"
+      ),
+      mainCategory: (value: MainCategories | null) =>
+        value !== null && mainCategoriesList.toString().includes(value)
+          ? null
+          : "Välj en kategori från listan",
     },
   });
 
@@ -102,7 +114,7 @@ const RecipeForm = () => {
           </Center>
           <Title order={5}>{index + 1}.</Title>
           <Textarea
-          w={570}
+            w={570}
             placeholder="Skriv instruktioner här och lägg till stycke med knappen nedanför"
             {...form.getInputProps(`instructions.${index}`)}
           />
@@ -114,9 +126,41 @@ const RecipeForm = () => {
     </Draggable>
   ));
 
+  async function testDb(data: any) {
+    try {
+      // 👇️ const response: Response
+      const response = await fetch("http://localhost:8080/recipe/addRecipe", {
+        method: "POST",
+        body: JSON.stringify(await convertFormValues(data)),
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error(`Error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      console.log("result is: ", JSON.stringify(result, null, 4));
+
+      return result;
+    } catch (error) {
+      if (error instanceof Error) {
+        console.log("error message: ", error.message);
+        return error.message;
+      } else {
+        console.log("unexpected error: ", error);
+        return "An unexpected error occurred";
+      }
+    }
+  }
+
   return (
     <Flex p="lg" direction="column" align="center">
-      <form onSubmit={form.onSubmit((values) => console.log(values))}>
+      <form onSubmit={form.onSubmit((values) => testDb(values))}>
         <Box maw={340} mx="auto">
           <TextInput
             withAsterisk
@@ -150,6 +194,11 @@ const RecipeForm = () => {
         <Box w="100%">
           <Group justify="center">
             <Title order={5}>Ingredienser</Title>
+          </Group>
+          <Group justify="center">
+            <Text size="xs">
+              (Minst en måste fyllas i för att spara receptet)
+            </Text>
           </Group>
           <Flex direction={"row"} justify="center">
             <DragDropContext
@@ -193,6 +242,11 @@ const RecipeForm = () => {
           <Group justify="center">
             <Title order={5}>Instruktioner</Title>
           </Group>
+          <Group justify="center">
+            <Text size="xs">
+              (Minst en måste fyllas i för att spara receptet)
+            </Text>
+          </Group>
           <Flex direction={"row"} justify="center">
             <DragDropContext
               onDragEnd={({ destination, source }) =>
@@ -215,11 +269,7 @@ const RecipeForm = () => {
           </Flex>
 
           <Group justify="center" mt="sm">
-            <Button
-              onClick={() =>
-                form.insertListItem("instructions", "")
-              }
-            >
+            <Button onClick={() => form.insertListItem("instructions", "")}>
               Lägg till stycke
             </Button>
           </Group>
@@ -251,7 +301,14 @@ const RecipeForm = () => {
           <FileInput
             accept="image/png,image/jpeg"
             label="Lägg till bild (valfritt)"
-            placeholder="Lägg till bild"
+            placeholder="Lägg till bild (Max. filstorlek: 2MB)"
+            {...form.getInputProps("image")}
+          />
+
+          <TextInput
+            label="Skriv en text till din bild (valfritt)"
+            placeholder='T.ex. "Rätten serverad med nybakt bröd."'
+            {...form.getInputProps("caption")}
           />
 
           <Checkbox
