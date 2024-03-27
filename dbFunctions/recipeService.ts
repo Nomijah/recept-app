@@ -1,4 +1,4 @@
-import { Recipe } from '@/app/Schemas/dbTypes';
+import { DbRecipe } from '@/types/dbTypes/dbRecipe';
 import cosmosClient from './cosmosClient';
 import { SqlQuerySpec } from '@azure/cosmos';
 
@@ -8,9 +8,9 @@ const containerId = process.env.NEXT_PUBLIC_AZURE_DB_RECIPE_CONTAINER_ID || '';
 const client = cosmosClient();
 
 /**
- * Create recipe item if it does not exist
+ * Create recipe item if it does not exist.
  */
-export async function createRecipe(recipe: Recipe) {
+export async function createRecipe(recipe: DbRecipe) {
     const { item } = await client
       .database(databaseId)
       .container(containerId)
@@ -21,15 +21,18 @@ export async function createRecipe(recipe: Recipe) {
   /**
  * Delete the item by ID.
  */
-export async function deleteRecipe(recipe: Recipe) {
+export async function deleteRecipe(recipe: DbRecipe) {
   await client
     .database(databaseId)
     .container(containerId)
-    .item(recipe.id)
-    .delete<Recipe>()
-  console.log(`Deleted item:\n${recipe.id}\n`)
+    .item(recipe._id)
+    .delete<DbRecipe>()
+  console.log(`Deleted item:\n${recipe._id}\n`)
 }
 
+/**
+ * Get all recipes created by user.
+ */
 export async function getAllUserRecipes(userId: string) {
   const query = {
     query: `SELECT * FROM r WHERE r.userId = @userId 
@@ -45,11 +48,13 @@ export async function getAllUserRecipes(userId: string) {
   return await getRecipes(query);
 }
 
+/**
+ * Get all public recipes.
+ */
 export async function getAllPublicRecipes() {
   const query = 
     `SELECT * FROM r WHERE r.public = true
     ORDER BY results.title`;
-
   return await getRecipes(query);
 }
 

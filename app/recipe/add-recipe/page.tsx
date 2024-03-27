@@ -1,4 +1,4 @@
-import RecipeForm from '@/app/components/recipeform/recipeform'
+import RecipeForm from '@/components/Recipes/recipeform/recipeform'
 import React from 'react'
 
 const AddRecipe = () => {
