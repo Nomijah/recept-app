@@ -3,11 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.css";
 // core styles are required for all packages
 import "@mantine/core/styles.css";
-import { MantineProvider, createTheme } from "@mantine/core";
 
 const inter = Inter({ subsets: ["latin"] });
-
-const theme = createTheme({});
 
 export const metadata: Metadata = {
   title: "Vegoboken",
@@ -22,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <MantineProvider>{children}</MantineProvider>
+        {children}
       </body>
     </html>
   );

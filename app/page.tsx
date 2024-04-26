@@ -1,9 +1,6 @@
-"use client";
-import { Anchor, Button } from "@mantine/core";
-import styles from "./page.module.css";
-import { DbRecipe } from "../types/dbTypes/dbRecipe";
-import { createRecipe } from "@/dbFunctions/recipeService";
+// "use client";
 import { RecipeViewData } from "@/types/displayTypes/recipeViewData";
+import { Button, buttonVariants } from "@/components/ui/button";
 
 export default function Home() {
   const recipeTest: RecipeViewData = {
@@ -29,12 +26,12 @@ export default function Home() {
   // };
 
   return (
-    <main className={styles.main}>
+    <main>
       <h1>hallå</h1>
-      <Anchor href="/recipe">Recipe</Anchor>
-      <Anchor href="/recipe/add-recipe">
-        <Button size="large">Add Recipe</Button>
-      </Anchor>
+      <a href="/recipe">Recipe</a>
+      <a href="/recipe/add-recipe">
+        <Button>Add Recipe</Button>
+      </a>
     </main>
   );
 }

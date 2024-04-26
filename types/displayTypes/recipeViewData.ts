@@ -10,4 +10,6 @@ export type RecipeViewData = {
     portionsUnit: string;
     ingredients: Ingredient[];
     instructions: string[];
+    imageUrl: string;
+    tags: string[];
 }
