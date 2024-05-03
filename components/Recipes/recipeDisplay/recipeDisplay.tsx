@@ -3,24 +3,20 @@ import React, { useEffect, useState } from "react";
 import { RecipeViewData } from "../../../types/displayTypes/recipeViewData";
 import LargeImage from "@/components/ui/largeImage";
 import { Input } from "@/components/ui/input";
+import { NumberInput } from "@mantine/core";
 
 type RecipeDisplayProps = {
   recipe: RecipeViewData;
 };
 
 const RecipeDisplay = ({ recipe }: RecipeDisplayProps) => {
-  const [portions, setPortions] = useState(recipe.portions);
+  const [portions, setPortions] = useState<string | number>(recipe.portions);
   const [multiplier, setMultiplier] = useState(1);
   const originalPortions = recipe.portions;
 
   useEffect(() => {
-    setMultiplier(Math.round((portions / originalPortions) * 100) / 100);
+    setMultiplier(Math.round((parseInt(portions.toString()) / originalPortions) * 100) / 100);
   }, [portions, originalPortions]);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    setPortions(event.target.valueAsNumber);
-  };
 
   function formatNumber(num: number) {
     const decimalCount =
@@ -57,13 +53,11 @@ const RecipeDisplay = ({ recipe }: RecipeDisplayProps) => {
           </ul>
           <div className="flex justify-center items-center mt-3">
             <span>Räcker till:&nbsp;</span>
-            <Input
-              type="number"
-              defaultValue={originalPortions}
-              className="w-12 max-h-8 p-1"
-              onChange={handleChange}
-              min='1'
-              max='1000'
+            <NumberInput
+              value={portions}
+              className="w-16 max-h-8"
+              min={1}
+              onChange={setPortions}
             />
             <span>&nbsp;st {recipe.portionsUnit}</span>
           </div>
