@@ -4,6 +4,7 @@ import "./globals.css";
 // core styles are required for all packages
 import "@mantine/core/styles.css";
 import { MantineProvider } from "@mantine/core";
+import { theme } from "@/mantine/theme";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -20,7 +21,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <MantineProvider>{children}</MantineProvider>
+        <MantineProvider theme={theme} forceColorScheme="light">{children}</MantineProvider>
       </body>
     </html>
   );

@@ -39,7 +39,7 @@ const RecipeForm = () => {
     initialValues: {
       title: "",
       description: "",
-      portions: 0,
+      portions: 1,
       portionsUnit: "",
       ingredients: [{ name: "", quantity: null, unit: "" }],
       instructions: [""],
@@ -159,10 +159,11 @@ const RecipeForm = () => {
   }
 
   return (
-    <Flex p="lg" direction="column" align="center">
+    <Flex p="lg" direction="column" align="center" className="div-main">
       <form onSubmit={form.onSubmit((values) => testDb(values))}>
         <Box maw={340} mx="auto">
           <TextInput
+            classNames={{input: "input"}}
             withAsterisk
             label="Titel"
             placeholder="Skriv namn på receptet här"
@@ -179,6 +180,7 @@ const RecipeForm = () => {
             <NumberInput
               label="Receptet räcker till:"
               placeholder="Antal"
+              min={1}
               {...form.getInputProps("portions")}
             />
             <TextInput
