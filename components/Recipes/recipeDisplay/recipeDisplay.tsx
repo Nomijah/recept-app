@@ -3,24 +3,22 @@ import React, { useEffect, useState } from "react";
 import { RecipeViewData } from "../../../types/displayTypes/recipeViewData";
 import LargeImage from "@/components/ui/largeImage";
 import { Input } from "@/components/ui/input";
+import { NumberInput } from "@mantine/core";
 
 type RecipeDisplayProps = {
   recipe: RecipeViewData;
 };
 
 const RecipeDisplay = ({ recipe }: RecipeDisplayProps) => {
-  const [portions, setPortions] = useState(recipe.portions);
+  const [portions, setPortions] = useState<string | number>(recipe.portions);
   const [multiplier, setMultiplier] = useState(1);
   const originalPortions = recipe.portions;
 
   useEffect(() => {
-    setMultiplier(Math.round((portions / originalPortions) * 100) / 100);
+    setMultiplier(
+      Math.round((parseInt(portions.toString()) / originalPortions) * 100) / 100
+    );
   }, [portions, originalPortions]);
-
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    event.preventDefault();
-    setPortions(event.target.valueAsNumber);
-  };
 
   function formatNumber(num: number) {
     const decimalCount =
@@ -39,8 +37,8 @@ const RecipeDisplay = ({ recipe }: RecipeDisplayProps) => {
         <i>{recipe.description}</i>
       </div>
 
-      <div className="recipe-main sm:justify-center">
-        <div className="recipe-part max-w-72 col-start-1 xl:col-start-2 lg:text-left">
+      <div className="recipe-main sm:justify-center @container">
+        <div className="recipe-part max-w-72 col-start-2 lg:text-left">
           <ul>
             <h3>Ingredienser</h3>
             {recipe.ingredients.map((ingredient, index) => (
@@ -55,21 +53,21 @@ const RecipeDisplay = ({ recipe }: RecipeDisplayProps) => {
               </li>
             ))}
           </ul>
-          <div className="flex justify-center items-center mt-3">
+          <div className="flex flex-col @xs:flex-row justify-center items-center mt-4 mb-1">
             <span>Räcker till:&nbsp;</span>
-            <Input
-              type="number"
-              defaultValue={originalPortions}
-              className="w-12 max-h-8 p-1"
-              onChange={handleChange}
-              min='1'
-              max='1000'
-            />
-            <span>&nbsp;st {recipe.portionsUnit}</span>
+            <div className="flex items-center">
+              <NumberInput
+                value={portions}
+                className="w-16 max-h-8"
+                min={1}
+                onChange={setPortions}
+              />
+              <span>&nbsp;st {recipe.portionsUnit}</span>
+            </div>
           </div>
         </div>
 
-        <div className="recipe-part lg:col-start-2 lg:col-span-2 xl:col-start-3 lg:text-left">
+        <div className="recipe-part col-start-3 col-span-2 lg:text-left">
           <ol>
             <h3>Instruktioner</h3>
             {recipe.instructions.map((instruction, index) => (
