@@ -30,6 +30,7 @@ import {
   mainCategoriesList,
 } from "@/types/helperTypes/mainCategories";
 import { convertFormValues } from "@/helperFunctions/convertFormValues";
+import { createRecipe } from "@/requests/recipes/recipePost";
 
 const RecipeForm = () => {
   function isUnit(value: any): value is Unit {
@@ -39,7 +40,7 @@ const RecipeForm = () => {
     initialValues: {
       title: "",
       description: "",
-      portions: 1,
+      portions: null,
       portionsUnit: "",
       ingredients: [{ name: "", quantity: null, unit: "" }],
       instructions: [""],
@@ -67,13 +68,22 @@ const RecipeForm = () => {
             ? null
             : "Välj en enhet från listan",
       },
-      instructions: isNotEmpty(
-        "Minst ett stycke instruktioner måste fyllas i"
-      ),
+      instructions: (value) =>
+        value.length > 0
+          ? value[0].length > 1
+            ? null
+            : "Minst ett stycke instruktioner måste fyllas i."
+          : "Minste ett stycke instruktioner måste fyllas i",
       mainCategory: (value: MainCategories | null) =>
         value !== null && mainCategoriesList.toString().includes(value)
           ? null
           : "Välj en kategori från listan",
+      image: (value) =>
+        value != undefined
+          ? value.size < 2080000
+            ? null
+            : "Filen är för stor, maximal tillåten storlek är 2 MB."
+          : null,
     },
   });
 
@@ -90,6 +100,7 @@ const RecipeForm = () => {
           />
           <NumberInput
             placeholder="Mängd"
+            min={0}
             {...form.getInputProps(`ingredients.${index}.quantity`)}
           />
           <Autocomplete
@@ -116,6 +127,8 @@ const RecipeForm = () => {
           <Textarea
             w={570}
             placeholder="Skriv instruktioner här och lägg till stycke med knappen nedanför"
+            required={true}
+            error="Fältet får inte vara tomt."
             {...form.getInputProps(`instructions.${index}`)}
           />
           <Button onClick={() => form.removeListItem("instructions", index)}>
@@ -126,44 +139,17 @@ const RecipeForm = () => {
     </Draggable>
   ));
 
-  async function testDb(data: any) {
-    try {
-      // 👇️ const response: Response
-      const response = await fetch("http://localhost:8080/recipe/addRecipe", {
-        method: "POST",
-        body: JSON.stringify(await convertFormValues(data)),
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error(`Error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      console.log("result is: ", JSON.stringify(result, null, 4));
-
-      return result;
-    } catch (error) {
-      if (error instanceof Error) {
-        console.log("error message: ", error.message);
-        return error.message;
-      } else {
-        console.log("unexpected error: ", error);
-        return "An unexpected error occurred";
-      }
-    }
-  }
-
   return (
     <Flex p="lg" direction="column" align="center" className="div-main">
-      <form onSubmit={form.onSubmit((values) => testDb(values))}>
+      <form
+        onSubmit={form.onSubmit(async (values) => {
+          console.log("test");
+          createRecipe(await convertFormValues(values));
+        })}
+      >
         <Box maw={340} mx="auto">
           <TextInput
-            classNames={{input: "input"}}
+            classNames={{ input: "input" }}
             withAsterisk
             label="Titel"
             placeholder="Skriv namn på receptet här"
@@ -180,7 +166,7 @@ const RecipeForm = () => {
             <NumberInput
               label="Receptet räcker till:"
               placeholder="Antal"
-              min={1}
+              min={0}
               {...form.getInputProps("portions")}
             />
             <TextInput
@@ -297,7 +283,7 @@ const RecipeForm = () => {
           <TagsInput
             label="Lägg till taggar (valfritt)"
             placeholder="Tryck enter för att lägga till fler"
-            {...form.getInputProps("taggar")}
+            {...form.getInputProps("tags")}
           />
 
           <FileInput

@@ -2,7 +2,6 @@
 import React, { useEffect, useState } from "react";
 import { RecipeViewData } from "../../../types/displayTypes/recipeViewData";
 import LargeImage from "@/components/ui/largeImage";
-import { Input } from "@/components/ui/input";
 import { NumberInput } from "@mantine/core";
 
 type RecipeDisplayProps = {
@@ -10,9 +9,11 @@ type RecipeDisplayProps = {
 };
 
 const RecipeDisplay = ({ recipe }: RecipeDisplayProps) => {
-  const [portions, setPortions] = useState<string | number>(recipe.portions);
+  const [portions, setPortions] = useState<string | number>(
+    recipe.portions < 1 ? 1 : recipe.portions
+  );
   const [multiplier, setMultiplier] = useState(1);
-  const originalPortions = recipe.portions;
+  const originalPortions = recipe.portions < 1 ? 1 : recipe.portions;
 
   useEffect(() => {
     setMultiplier(
@@ -53,18 +54,25 @@ const RecipeDisplay = ({ recipe }: RecipeDisplayProps) => {
               </li>
             ))}
           </ul>
-          <div className="flex flex-col @xs:flex-row justify-center items-center mt-4 mb-1">
-            <span>Räcker till:&nbsp;</span>
-            <div className="flex items-center">
-              <NumberInput
-                value={portions}
-                className="w-16 max-h-8"
-                min={1}
-                onChange={setPortions}
-              />
-              <span>&nbsp;st {recipe.portionsUnit}</span>
+          {recipe.portions !== 0 && (
+            <div className="flex flex-col @xs:flex-row justify-center items-center mt-4 mb-1">
+              <span>Räcker till:&nbsp;</span>
+              <div className="flex items-center">
+                <NumberInput
+                  value={portions}
+                  className="w-16 max-h-8"
+                  min={1}
+                  onChange={setPortions}
+                />
+                <span>
+                  &nbsp;st{" "}
+                  {recipe.portionsUnit !== ""
+                    ? recipe.portionsUnit.toLowerCase()
+                    : "portioner"}
+                </span>
+              </div>
             </div>
-          </div>
+          )}
         </div>
 
         <div className="recipe-part col-start-3 col-span-2 lg:text-left">

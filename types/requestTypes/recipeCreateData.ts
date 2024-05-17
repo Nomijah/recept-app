@@ -5,17 +5,19 @@ export type RecipeCreateData = {
   description: string;
   portions: number;
   portionsUnit: string;
-  ingredients: {name: string, quantity: number |null, unit: string | ""}[];
+  ingredients: { name: string; quantity: number | null; unit: string | "" }[];
   instructions: string[];
   mainCategory: MainCategories | null;
   subCategory: string;
   tags: string[];
-  image: {
-    fileName: string;
-    fileType: string;
-    size: number;
-    base64: string;
-    caption: string;
-  } | undefined;
+  image:
+    | {
+        fileName: string;
+        base64: string;
+        fileType: string;
+        size: number;
+        caption: string;
+      }
+    | undefined;
   public: boolean;
 };
