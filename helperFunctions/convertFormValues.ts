@@ -8,12 +8,12 @@ export async function convertFormValues(
   const recipeCreateData: RecipeCreateData = {
     title: values.title,
     description: values.description,
-    portions: values.portions,
+    portions: values.portions ? values.portions : 0,
     portionsUnit: values.portionsUnit,
     ingredients: values.ingredients,
     instructions: values.instructions,
     mainCategory: values.mainCategory,
-    subCategory: values.subCategory && "",
+    subCategory: values.subCategory,
     tags: values.tags,
     image: values.image
       ? {
@@ -21,7 +21,7 @@ export async function convertFormValues(
           base64: await convertFileToBase64(values.image),
           fileType: values.image.type,
           size: values.image.size,
-          caption: values.caption && "",
+          caption: values.caption,
         }
       : undefined,
     public: values.public,
