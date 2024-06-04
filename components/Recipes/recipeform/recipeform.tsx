@@ -31,11 +31,9 @@ import {
 } from "@/types/helperTypes/mainCategories";
 import { convertFormValues } from "@/helperFunctions/convertFormValues";
 import { createRecipe } from "@/requests/recipes/recipePost";
+import { redirect } from "next/navigation";
 
 const RecipeForm = () => {
-  function isUnit(value: any): value is Unit {
-    return unitsList.includes(value);
-  }
   const form = useForm<recipeFormValues>({
     initialValues: {
       title: "",
@@ -143,8 +141,8 @@ const RecipeForm = () => {
     <Flex p="lg" direction="column" align="center" className="div-main">
       <form
         onSubmit={form.onSubmit(async (values) => {
-          console.log("test");
           createRecipe(await convertFormValues(values));
+          // create modal popup confirming form submit and redirect to recipe collection
         })}
       >
         <Box maw={340} mx="auto">
