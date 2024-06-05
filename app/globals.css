@@ -86,6 +86,9 @@
   .div-main {
     @apply bg-background h-auto min-h-screen w-screen px-5 py-2 text-foreground text-center font-body;
   }
+  .div-login{
+    @apply bg-background h-auto min-h-screen w-screen px-5 py-2 text-foreground font-body;
+  }
   .recipe-main {
     @apply flex flex-col items-center lg:grid py-4 lg:grid-cols-[12%,auto,auto,auto,12%] xl:mx-0;
   }
