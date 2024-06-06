@@ -11,6 +11,7 @@ import {
   FileInput,
   Flex,
   Group,
+  Modal,
   NumberInput,
   Select,
   TagsInput,
@@ -31,9 +32,19 @@ import {
 } from "@/types/helperTypes/mainCategories";
 import { convertFormValues } from "@/helperFunctions/convertFormValues";
 import { createRecipe } from "@/requests/recipes/recipePost";
-import { redirect } from "next/navigation";
+import { useDisclosure } from "@mantine/hooks";
+import RecipeModal from "./recipeModal";
+import { useRouter } from "next/navigation";
 
 const RecipeForm = () => {
+  const [opened, { open, close }] = useDisclosure(false);
+  const router = useRouter();
+
+  const handleClose = () => {
+    close;
+    router.push("/recipe");
+  };
+
   const form = useForm<recipeFormValues>({
     initialValues: {
       title: "",
@@ -43,7 +54,6 @@ const RecipeForm = () => {
       ingredients: [{ name: "", quantity: null, unit: "" }],
       instructions: [""],
       mainCategory: null,
-      subCategory: "",
       tags: [],
       image: null,
       caption: "",
@@ -142,7 +152,8 @@ const RecipeForm = () => {
       <form
         onSubmit={form.onSubmit(async (values) => {
           createRecipe(await convertFormValues(values));
-          // create modal popup confirming form submit and redirect to recipe collection
+          open();
+          // router.push("/recipe");
         })}
       >
         <Box maw={340} mx="auto">
@@ -272,12 +283,6 @@ const RecipeForm = () => {
             {...form.getInputProps("mainCategory")}
           />
 
-          <TextInput
-            label="Skriv en underkategori (valfritt)"
-            placeholder="T.ex. soppor"
-            {...form.getInputProps("subCategory")}
-          />
-
           <TagsInput
             label="Lägg till taggar (valfritt)"
             placeholder="Tryck enter för att lägga till fler"
@@ -303,11 +308,18 @@ const RecipeForm = () => {
             {...form.getInputProps("public", { type: "checkbox" })}
           />
 
-          <Group justify="flex-end" mt="md">
+          <Group justify={"space-between"} mt="md">
+            <Button onClick={() => router.push("/recipe")}>Tillbaka</Button>
             <Button type="submit">Spara</Button>
           </Group>
         </Box>
       </form>
+      <Modal opened={opened} onClose={handleClose} withCloseButton={false}>
+        <Flex justify={"space-between"} align={"center"}>
+          <Text size="md">Ditt recept är sparat!</Text>
+          <Button onClick={handleClose}>Tillbaka</Button>
+        </Flex>
+      </Modal>
     </Flex>
   );
 };
