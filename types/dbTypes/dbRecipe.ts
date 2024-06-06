@@ -10,14 +10,13 @@ export type DbRecipe = {
   ingredients: Ingredient[];
   instructions: string[];
   mainCategory: MainCategories;
-  subCategory: string;
   tags: string[];
   imageMetaData: {
     fileName: string;
     fileType: string;
     caption: string;
     imageUrl: string;
-  }
+  };
   userId: string;
   public: boolean;
   sharedList: string[];

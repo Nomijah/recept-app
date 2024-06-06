@@ -13,7 +13,6 @@ export async function convertFormValues(
     ingredients: values.ingredients,
     instructions: values.instructions,
     mainCategory: values.mainCategory,
-    subCategory: values.subCategory,
     tags: values.tags,
     image: values.image
       ? {
