@@ -14,7 +14,6 @@ export default function Home() {
     ],
     instructions: ["koka", "i gryta", "färdigt"],
     mainCategory: "Varmrätter",
-    subCategory: "Husman",
     tags: ["korv", "ris"],
     imageUrl: "http://testarbara.nu",
   };

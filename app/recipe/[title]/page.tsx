@@ -13,7 +13,6 @@ export default function Page({ params }: PageParams) {
     description:
       "Det här är en väldigt god rätt med många möjligheter till variation.",
     mainCategory: "Varmrätter",
-    subCategory: "Husman",
     portions: 4,
     portionsUnit: "Portioner",
     ingredients: [

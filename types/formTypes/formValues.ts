@@ -9,7 +9,6 @@ export type recipeFormValues = {
   ingredients: { name: string; quantity: number | null; unit: Unit | "" }[];
   instructions: string[];
   mainCategory: MainCategories | null;
-  subCategory: string;
   tags: string[];
   image: File | null;
   caption: string;

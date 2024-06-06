@@ -8,7 +8,6 @@ export type RecipeCreateData = {
   ingredients: { name: string; quantity: number | null; unit: string | "" }[];
   instructions: string[];
   mainCategory: MainCategories | null;
-  subCategory: string;
   tags: string[];
   image:
     | {
