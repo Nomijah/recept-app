@@ -1,5 +1,6 @@
+import { ResponseBody } from "@/types/dbTypes/responseBody";
 import { RecipeCreateData } from "@/types/requestTypes/recipeCreateData";
-import axios, { AxiosResponse } from "axios";
+import axios, { AxiosResponse, AxiosError } from "axios";
 
 export async function createRecipe(recipeToCreate: RecipeCreateData) {
   try {
@@ -10,7 +11,15 @@ export async function createRecipe(recipeToCreate: RecipeCreateData) {
     );
 
     console.log(response.data);
+    return response.data as ResponseBody;
   } catch (error) {
-    console.log(error);
+    if (isAxiosError(error)) {
+      return error.response?.request.response as ResponseBody;
+    }
+    return { isSuccessful: false, errorMessages: [], statusCode: 400 };
   }
+}
+
+function isAxiosError(error: any): error is AxiosError {
+  return error && error.name === "AxiosError" && typeof error.code === "string";
 }
