@@ -33,7 +33,6 @@ import {
 import { convertFormValues } from "@/helperFunctions/convertFormValues";
 import { createRecipe } from "@/requests/recipes/recipePost";
 import { useDisclosure } from "@mantine/hooks";
-import RecipeModal from "./recipeModal";
 import { useRouter } from "next/navigation";
 
 const RecipeForm = () => {
@@ -41,7 +40,7 @@ const RecipeForm = () => {
   const router = useRouter();
 
   const handleClose = () => {
-    close;
+    close();
     router.push("/recipe");
   };
 
@@ -151,9 +150,18 @@ const RecipeForm = () => {
     <Flex p="lg" direction="column" align="center" className="div-main">
       <form
         onSubmit={form.onSubmit(async (values) => {
-          createRecipe(await convertFormValues(values));
-          open();
-          // router.push("/recipe");
+          const response = await createRecipe(await convertFormValues(values));
+          if (response.isSuccessful) {
+            open();
+          } else {
+            // console.log(response);
+            const alertText = response.errorMessages[0];
+            if (alertText) {
+              alert(alertText);
+            } else {
+              alert("An unknown error occurred.");
+            }
+          }
         })}
       >
         <Box maw={340} mx="auto">
